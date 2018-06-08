@@ -27,6 +27,7 @@ class Chassis(object):
         self.rest_client = rest_client
         self.chassis_list = []
         self.chassis_get()
+        self.log = rest_client.log
 
     def chassis_get(self, uri=UriConst.chassis_uri):
         """
@@ -62,6 +63,13 @@ class Chassis(object):
                     print "RPM    : [" + str(fan_dict['Reading']) + "]"
                     print "STATE  : [" + str(fan_dict['Status']['State']) + "]"
                     print "HEALTH : [" + str(fan_dict['Status']['Health']) + "]"
+
+                    LOGMSG = "FAN    : [" + str(fan_dict['Id']) + "]" + \
+                    "RPM    : [" + str(fan_dict['Reading']) + "]" + \
+                    "STATE  : [" + str(fan_dict['Status']['State']) + "]" + \
+                    "HEALTH : [" + str(fan_dict['Status']['Health']) + "]"
+                    self.log.info(LOGMSG)
+
 
                     if (fan_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
@@ -101,6 +109,14 @@ class Chassis(object):
                     print "Health : [" + str(psu_dict['Status']['Health']) + "]"
                     print ""
 
+                    LOGMSG = "Power-Supply : [" + str(psu_dict['MemberId']) + "]" + \
+                    "Power  : [" + str(psu_dict['PowerConsumedWatts']) + "] Watts" + \
+                    "FanRpm : [" + str(psu_dict['PsuFanRpm']) + "]" + \
+                    "State  : [" + str(psu_dict['Status']['State']) + "]" + \
+                    "Health : [" + str(psu_dict['Status']['Health']) + "]"
+                    self.log.info(LOGMSG)
+ 
+
                     """
                     self.log.info("Power-Supply-:",
                                   Id=psu_dict['MemberId'],
@@ -114,6 +130,8 @@ class Chassis(object):
                     if (psu_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG="Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        self.log.info(LOGMSG)
                         print ""
                         """
                         self.rest_client.generate_alarm(

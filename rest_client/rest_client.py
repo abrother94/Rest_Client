@@ -28,7 +28,7 @@ from constants import UriConst, RestConst, Defaults
 
 class RestClient(object):
     def __init__(self, host_and_port, adapter, log, device_id):
-        #self.log = log
+        self.log = log
         self.headers = {'Accept-Encoding': None}
         self.device_id = device_id
         """self.adapter_agent = adapter.adapter_agent

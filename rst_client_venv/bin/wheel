@@ -1,4 +1,4 @@
-#!/home/voltha/Rest_Client/rst_cliennt_venv/bin/python2
+#!/home/voltha/Rest_Client/rst_client_venv/bin/python2
 
 # -*- coding: utf-8 -*-
 import re

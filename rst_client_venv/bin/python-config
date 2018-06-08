@@ -1,4 +1,4 @@
-#!/home/voltha/Rest_Client/rst_cliennt_venv/bin/python
+#!/home/voltha/Rest_Client/rst_client_venv/bin/python
 
 import sys
 import getopt

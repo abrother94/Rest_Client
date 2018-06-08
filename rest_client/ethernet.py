@@ -65,13 +65,13 @@ class Ethernet(object):
                                       Health=port_dict['Status']['Health'])
                         """
                         if (port_dict['Status']['Health'] != 'OK'):
+                            """
                             self.rest_client.generate_alarm(
                                 status=True,
                                 alarm={'Health-check-failed-for-Port':
                                        str(port_dict['Id'])},
                                 alarm_severity=port_dict['Status']
                                 ['Health'])
-                            """
                             self.log.info("Raising-alarm-for-Port",
                                           port_dict['Id'])
                             """
