@@ -27,6 +27,7 @@ class Ethernet(object):
         self.rest_client = rest_client
         self.ethernet_list = []
         self.ethernet_get()
+        self.log = rest_client.log
 
     def ethernet_get(self, uri=UriConst.ethernet_uri):
         """
@@ -59,6 +60,12 @@ class Ethernet(object):
                         print "Bias Current : [" + str(port_dict['BiasCurrent']) + "]"
                         print "Health       : [" + str(port_dict['Status']['Health']) + "]"
                         print ""
+
+                        LOGMSG = "Port         : [" + str(port_dict['Id']) + "] Enabled" + \
+                        "Bias Current : [" + str(port_dict['BiasCurrent']) + "]" + \
+                        "Health       : [" + str(port_dict['Status']['Health']) + "]"
+                        self.log.info(LOGMSG)
+
                         """
                         self.log.info("Enabled-Port", PortId=port_dict['Id'],
                                       BiasCurrent=port_dict['BiasCurrent'],
@@ -76,10 +83,16 @@ class Ethernet(object):
                                           port_dict['Id'])
                             """
                             print("Raising-ARALM-PORT!!!!!")
+
+                            LOGMSG = "Raising-ARALM-PORT!!!!!"
+                            self.log.info(LOGMSG)
                     else:
                         """self.log.info("Disabled-Port", PortId=port_dict['Id'])"""
                         print "Port         : [" + str(port_dict['Id']) + "] Disabled"
                         print ""
+
+                        LOGMSG = "Port         : [" + str(port_dict['Id']) + "] Disabled" 
+                        self.log.info(LOGMSG)
 
                 print "///////////////////////////////////////////////////////////////////"
 

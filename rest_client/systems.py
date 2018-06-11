@@ -27,6 +27,7 @@ class Systems (object):
         self.reset_allow_values = ["GracefulRestart"]
         self.rest_client = rest_client
         self.system_reboot_uri_get()
+        self.log = rest_client.log
 
     def reboot_olt(self, reset_type=Defaults.reset_type):
         """
