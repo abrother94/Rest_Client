@@ -25,6 +25,18 @@ from constants import UriConst, Defaults
 class Chassis(object):
     def __init__(self, rest_client):
         self.rest_client = rest_client
+        # Get PSME version #
+        m_uri = UriConst.base_uri + UriConst.managers_uri
+        response = self.rest_client.http_get(UriConst.base_uri + UriConst.managers_uri)
+        psme_version = json.loads(response.text)['FirmwareVersion']
+
+        if psme_version == "2.1.3.59.1" : 
+            print("calsoft")
+            self.rest_client.psme_version="calsoft"
+        else :
+            print("accton")
+            self.rest_client.psme_version="accton"
+
         self.chassis_list = []
         self.chassis_get()
         self.log = rest_client.log
@@ -44,6 +56,78 @@ class Chassis(object):
         except Exception as e:
             print("Exception-occurred-:", str(e))
 
+    def fans_get_(self):
+        """
+        Method to get fan health status.
+        """
+
+        for chassis in self.chassis_list:
+            thermal_uri = chassis['Thermal'][0]['@odata.id']
+            try:
+                response = self.rest_client.http_get(thermal_uri)
+                fans_list = json.loads(response.text)['Fans']
+                print "///////////////////////////////////////////////////////////////////"
+                for fan_dict in fans_list:
+                    print "Name   : [" + str(fan_dict['Name']) + "]"
+                    print "Fan    : [" + str(fan_dict['MemberId']) + "]"
+                    print "RPM    : [" + str(fan_dict['Reading']) + "]"
+                    print "State  : [" + str(fan_dict['Status']['State']) + "]"
+                    print "Health : [" + str(fan_dict['Status']['Health']) + "]"
+
+                    if  str(fan_dict['Reading']) == "None":
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"Reading\":" + "0" + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+                    else :
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"Reading\":" + str(fan_dict['Reading']) + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+
+                    self.log.info(LOGMSG)
+
+                    if (fan_dict['Status']['Health'] != 'OK'):
+                        # Raise Alarm
+                        print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                    print ""
+            except Exception as e:
+                print("Exception-occurred-:", str(e))
+
+    def temp_get_(self):
+        """
+        Method to get temp health status.
+        """
+
+        for chassis in self.chassis_list:
+            thermal_uri = chassis['Thermal'][0]['@odata.id']
+            try:
+                response = self.rest_client.http_get(thermal_uri)
+                temps_list = json.loads(response.text)['Temperatures']
+                print "///////////////////////////////////////////////////////////////////"
+                for temp_dict in temps_list:
+                    print "Name     : [" + str(temp_dict['Name']) + "]"
+                    print "SensorID : [" + str(temp_dict['MemberId']) + "]"
+                    print "Temp.    : [" + str(temp_dict['ReadingCelsius']) + "]"
+                    print "Sate     : [" + str(temp_dict['Status']['State']) + "]"
+                    print "Health   : [" + str(temp_dict['Status']['Health']) + "]"
+
+                    if str(temp_dict['ReadingCelsius']) == "None":
+                        LOGMSG = "{\"MemberId\":" + str(temp_dict['MemberId']) +"," + \
+                        "\"ReadingCelsius\":" + "0" + "," + \
+                        "\"State\":\"" + str(temp_dict['Status']['State']) + "\"}"
+                    else:
+                        LOGMSG = "{\"MemberId\":" + str(temp_dict['MemberId']) +"," + \
+                        "\"ReadingCelsius\":" + str(temp_dict['ReadingCelsius']) + "," + \
+                        "\"State\":\"" + str(temp_dict['Status']['State']) + "\"}"
+
+                    self.log.info(LOGMSG)
+
+                    if (temp_dict['Status']['Health'] != 'OK'):
+                        # Raise Alarm
+                        print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                    print ""
+            except Exception as e:
+                print("Exception-occurred-:", str(e))
+
     def fans_get(self):
         """
         Method to get fan health status.
@@ -59,31 +143,99 @@ class Chassis(object):
                     response = self.rest_client.http_get(fan['@odata.id'])
                     fan_dict = json.loads(response.text)['Fan']
 
-                    print "FAN    : [" + str(fan_dict['Id']) + "]"
+                    print "Fan    : [" + str(fan_dict['Id']) + "]"
                     print "RPM    : [" + str(fan_dict['Reading']) + "]"
-                    print "STATE  : [" + str(fan_dict['Status']['State']) + "]"
-                    print "HEALTH : [" + str(fan_dict['Status']['Health']) + "]"
+                    print "State  : [" + str(fan_dict['Status']['State']) + "]"
+                    print "Health : [" + str(fan_dict['Status']['Health']) + "]"
 
-                    LOGMSG = "FAN    : [" + str(fan_dict['Id']) + "]" + \
-                    "RPM    : [" + str(fan_dict['Reading']) + "]" + \
-                    "STATE  : [" + str(fan_dict['Status']['State']) + "]" + \
-                    "HEALTH : [" + str(fan_dict['Status']['Health']) + "]"
+                    if  str(fan_dict['Reading']) == "None":
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['Id']) +"," + \
+                        "\"Reading\":" + "0" + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+                    else :
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['Id']) +"," + \
+                        "\"Reading\":" + str(fan_dict['Reading']) + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+
                     self.log.info(LOGMSG)
 
 
                     if (fan_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
-                        """self.rest_client.generate_alarm(
-                            status=True,
-                            alarm={'Health-check-failed-for-Fan':
-                                   str(fan_dict['Id'])},
-                            alarm_severity=fan_dict['Status']['Health'])
-                        self.log.info("Raising-alarm-for-fan",
-                                      Id=fan_dict['Id'])
-                        """
                     print ""
 
+            except Exception as e:
+                print("Exception-occurred-:", str(e))
+
+    def temp_get(self):
+        """
+        Method to get temp status.
+                        """
+
+        for chassis in self.chassis_list:
+            thermal_uri = chassis['Links']['Thermal'][0]['@odata.id']
+            try:
+                response = self.rest_client.http_get(thermal_uri)
+                fans_list = json.loads(response.text)['Temperatures']
+                print "///////////////////////////////////////////////////////////////////"
+                for temp in fans_list:
+                    response = self.rest_client.http_get(temp['@odata.id'])
+                    fan_dict = json.loads(response.text)['Temperature']
+
+                    print "SensorID : [" + str(fan_dict['MemberId']) + "]"
+                    print "Temp.    : [" + str(fan_dict['ReadingCelsius']) + "]"
+                    print "Sate     : [" + str(fan_dict['Status']['State']) + "]"
+                    print "Health   : [" + str(fan_dict['Status']['Health']) + "]"
+
+                    if str(fan_dict['ReadingCelsius']) == "None":
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"ReadingCelsius\":" + "0" + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+                    else:
+                        LOGMSG = "{\"MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"ReadingCelsius\":" + str(fan_dict['ReadingCelsius']) + "," + \
+                        "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
+
+                    self.log.info(LOGMSG)
+
+                    if (fan_dict['Status']['Health'] != 'OK'):
+                        # Raise Alarm
+                        print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                    print ""
+            except Exception as e:
+                print("Exception-occurred-:", str(e))
+
+
+    def psu_get_(self):
+        """
+        Method to get psu health status.
+        """
+        for chassis in self.chassis_list:
+            power_uri = chassis['Power'][0]['@odata.id']
+            try:
+                response = self.rest_client.http_get(power_uri)
+                psu_list = json.loads(response.text)['PowerControl']
+
+                print "///////////////////////////////////////////////////////////////////"
+                for psu_dict in psu_list:
+                    print ""
+                    print "Power-Supply        : [" + str(psu_dict['MemberId']) + "]"
+                    print "PowerConsumedWatts  : [" + str(psu_dict['PowerConsumedWatts']) + "] Watts"
+                    print "State               : [" + str(psu_dict['Status']['State']) + "]"
+                    print "Health              : [" + str(psu_dict['Status']['Health']) + "]"
+                    print ""
+
+                    LOGMSG = "{\"MemberId\":" + str(psu_dict['MemberId']) +"," + \
+                    "\"PowerConsumedWatts\":" + str(psu_dict['PowerConsumedWatts']) + "," + \
+                    "\"State\":\"" + str(psu_dict['Status']['State']) + "\"}"
+
+                    self.log.info(LOGMSG)
+                    if (psu_dict['Status']['Health'] != 'OK'):
+                        # Raise Alarm
+                        print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        print ""
+                print ""
             except Exception as e:
                 print("Exception-occurred-:", str(e))
 
@@ -109,46 +261,30 @@ class Chassis(object):
                     print "Health : [" + str(psu_dict['Status']['Health']) + "]"
                     print ""
 
-                    LOGMSG = "Power-Supply : [" + str(psu_dict['MemberId']) + "]" + \
-                    "Power  : [" + str(psu_dict['PowerConsumedWatts']) + "] Watts" + \
-                    "FanRpm : [" + str(psu_dict['PsuFanRpm']) + "]" + \
-                    "State  : [" + str(psu_dict['Status']['State']) + "]" + \
-                    "Health : [" + str(psu_dict['Status']['Health']) + "]"
+                    LOGMSG = "{\"MemberId\":" + str(psu_dict['MemberId']) +"," + \
+                    "\"PowerConsumedWatts\":" + str(psu_dict['PowerConsumedWatts']) + "," + \
+                    "\"State\":\"" + str(psu_dict['Status']['State']) + "\"}"
+
                     self.log.info(LOGMSG)
  
-
-                    """
-                    self.log.info("Power-Supply-:",
-                                  Id=psu_dict['MemberId'],
-                                  Power=psu_dict['PowerConsumedWatts'],
-                                  Temperature=psu_dict['PsuTemperature'],
-                                  FanRpm=psu_dict['PsuFanRpm'],
-                                  State=psu_dict['Status']['State'],
-                                  Health=psu_dict['Status']['Health'])
-                    """
-
                     if (psu_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
-                        LOGMSG="Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
-                        self.log.info(LOGMSG)
                         print ""
-                        """
-                        self.rest_client.generate_alarm(
-                            status=True,
-                            alarm={'Health-check-failed-for-Psu':
-                                    str(psu_dict['MemberId'])},
-                            alarm_severity=psu_dict['Status']['Health'])
-                        self.log.info("Raising-alarm-for-PSU",
-                                          Id=psu_dict['MemberId'])
-                        """
                 print ""
             except Exception as e:
                 print("Exception-occurred-:", str(e))
 
     def get_chassis_health(self):
+        if self.rest_client.psme_version =="calsoft" : 
         self.fans_get()
         self.psu_get()
+            self.temp_get()
+        else :
+            self.fans_get_()
+            self.psu_get_()
+            self.temp_get_()
+
         self.health_thread = reactor.callLater(
             Defaults.health_check_interval,
             self.get_chassis_health)

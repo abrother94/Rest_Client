@@ -23,8 +23,10 @@ class UriConst:
     base_uri = '/redfish/v1'
     chassis_uri = '/Chassis/'
     systems_uri = '/Systems/'
+    managers_uri = '/Managers/1'
     update_uri = '/UpdateService/'
     ethernet_uri = '/EthernetSwitches/'
+    ethernet_uri_ = '/EthernetSwitches/1/Ports'
     HTTPS = 'https://'
 
 
