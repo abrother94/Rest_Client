@@ -8,5 +8,5 @@
 > (rst_client_venv)  pip install twisted <br />
 > (rst_client_venv)  pip install python-logstash <br />
 > Run Rest_Client : <br/>
-> (rst_client_venv)  python main.py asfv16_volt_IP_Address  <br />
+> (rst_client_venv)  run.sh asfv16_volt_IP_Address  <br />
 
