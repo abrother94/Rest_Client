@@ -30,7 +30,7 @@ class Chassis(object):
         response = self.rest_client.http_get(UriConst.base_uri + UriConst.managers_uri)
         psme_version = json.loads(response.text)['FirmwareVersion']
 
-        if psme_version == "2.1.3.59.1" : 
+        if psme_version == "2.1.3.59.1" :
             print("calsoft")
             self.rest_client.psme_version="calsoft"
         else :
@@ -266,7 +266,7 @@ class Chassis(object):
                     "\"State\":\"" + str(psu_dict['Status']['State']) + "\"}"
 
                     self.log.info(LOGMSG)
- 
+
                     if (psu_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
@@ -276,9 +276,9 @@ class Chassis(object):
                 print("Exception-occurred-:", str(e))
 
     def get_chassis_health(self):
-        if self.rest_client.psme_version =="calsoft" : 
-        self.fans_get()
-        self.psu_get()
+        if self.rest_client.psme_version =="calsoft" :
+            self.fans_get()
+            self.psu_get()
             self.temp_get()
         else :
             self.fans_get_()

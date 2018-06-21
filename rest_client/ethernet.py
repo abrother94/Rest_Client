@@ -29,7 +29,7 @@ class Ethernet(object):
 
         if rest_client.psme_version == "calsoft" :
             self.psme_version = "calsoft"
-        self.ethernet_get()
+            self.ethernet_get()
         else :
             self.psme_version = "accton"
             self.ethernet_get_()
@@ -162,11 +162,11 @@ class Ethernet(object):
     def get_ethernet_health(self):
 
         if self.psme_version == "calsoft" :
-        self.ports_get()
+            self.ports_get()
         else :
             self.ports_get_()
 
-        self.health_thread = reactor.callLater(
+            self.health_thread = reactor.callLater(
             Defaults.health_check_interval,
             self.get_ethernet_health)
 
