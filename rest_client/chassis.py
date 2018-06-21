@@ -88,6 +88,10 @@ class Chassis(object):
                     if (fan_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"FAN MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
+
                     print ""
             except Exception as e:
                 print("Exception-occurred-:", str(e))
@@ -124,6 +128,11 @@ class Chassis(object):
                     if (temp_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"Temp MemberId\":" + str(temp_dict['MemberId']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
+
+
                     print ""
             except Exception as e:
                 print("Exception-occurred-:", str(e))
@@ -159,10 +168,13 @@ class Chassis(object):
 
                     self.log.info(LOGMSG)
 
-
                     if (fan_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"Fan MemberId\":" + str(fan_dict['Id']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
+
                     print ""
 
             except Exception as e:
@@ -177,9 +189,9 @@ class Chassis(object):
             thermal_uri = chassis['Links']['Thermal'][0]['@odata.id']
             try:
                 response = self.rest_client.http_get(thermal_uri)
-                fans_list = json.loads(response.text)['Temperatures']
+                temps_list = json.loads(response.text)['Temperatures']
                 print "///////////////////////////////////////////////////////////////////"
-                for temp in fans_list:
+                for temp in temps_list:
                     response = self.rest_client.http_get(temp['@odata.id'])
                     fan_dict = json.loads(response.text)['Temperature']
 
@@ -197,11 +209,18 @@ class Chassis(object):
                         "\"ReadingCelsius\":" + str(fan_dict['ReadingCelsius']) + "," + \
                         "\"State\":\"" + str(fan_dict['Status']['State']) + "\"}"
 
+
                     self.log.info(LOGMSG)
 
                     if (fan_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"Temp MemberId\":" + str(fan_dict['MemberId']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
+
+
+
                     print ""
             except Exception as e:
                 print("Exception-occurred-:", str(e))
@@ -234,6 +253,10 @@ class Chassis(object):
                     if (psu_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"Power MemberId\":" + str(psu_dict['MemberId']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
+
                         print ""
                 print ""
             except Exception as e:
@@ -270,6 +293,9 @@ class Chassis(object):
                     if (psu_dict['Status']['Health'] != 'OK'):
                         # Raise Alarm
                         print "Power-Supply: [" + str(psu_dict['MemberId']) + "]  ALARM !!!!! HEALTH !!! NOT !!!! OK"
+                        LOGMSG = "{\"Power MemberId\":" + str(psu_dict['MemberId']) +"," + \
+                        "\"Health\":\"" + "Alarm" + "\"}"
+                        self.log.info(LOGMSG)
                         print ""
                 print ""
             except Exception as e:
