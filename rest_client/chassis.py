@@ -62,7 +62,7 @@ class Chassis(object):
         """
 
         for chassis in self.chassis_list:
-            thermal_uri = chassis['Thermal'][0]['@odata.id']
+            thermal_uri = chassis['Thermal']['@odata.id']
             try:
                 response = self.rest_client.http_get(thermal_uri)
                 fans_list = json.loads(response.text)['Fans']
@@ -102,7 +102,7 @@ class Chassis(object):
         """
 
         for chassis in self.chassis_list:
-            thermal_uri = chassis['Thermal'][0]['@odata.id']
+            thermal_uri = chassis['Thermal']['@odata.id']
             try:
                 response = self.rest_client.http_get(thermal_uri)
                 temps_list = json.loads(response.text)['Temperatures']
@@ -231,7 +231,7 @@ class Chassis(object):
         Method to get psu health status.
         """
         for chassis in self.chassis_list:
-            power_uri = chassis['Power'][0]['@odata.id']
+            power_uri = chassis['Power']['@odata.id']
             try:
                 response = self.rest_client.http_get(power_uri)
                 psu_list = json.loads(response.text)['PowerControl']
